@@ -1,19 +1,23 @@
 #!/bin/bash
 
-# Muat konfigurasi
-source ./config.sh
+# ========== ISI CONFIG.SH ==========
+# Konfigurasi
+BACKUP_SOURCE="/etc /var/www /home"
+BACKUP_DEST="/root/backup"
+DATE=$(date +%F_%T)
+BACKUP_NAME="backup-$DATE.tar.gz"
+LOGFILE="/root/backup/backup.log"
 
-# Cek apakah folder sumber ada
-if [ ! -d "$BACKUP_SOURCE" ]; then
-    echo "Folder sumber tidak ditemukan: $BACKUP_SOURCE"
-    exit 1
-fi
-
-# Buat folder tujuan jika belum ada
+# ========== ISI DATA.SH ==========
+# Membuat folder backup jika belum ada
 mkdir -p "$BACKUP_DEST"
 
-# Jalankan proses backup
-tar -czf "$BACKUP_DEST/$BACKUP_NAME" "$BACKUP_SOURCE"
+# Melakukan backup
+tar -czf "$BACKUP_DEST/$BACKUP_NAME" $BACKUP_SOURCE
 
-# Berhasil
-echo "Backup selesai: $BACKUP_DEST/$BACKUP_NAME"
+# Cek hasil backup
+if [ $? -eq 0 ]; then
+    echo "[$(date)] Backup sukses: $BACKUP_NAME" >> "$LOGFILE"
+else
+    echo "[$(date)] Backup gagal" >> "$LOGFILE"
+fi
